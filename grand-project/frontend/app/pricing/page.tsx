@@ -1,3 +1,4 @@
+import AnimatedContent from "@/components/animations/AnimatedContent/AnimatedContent";
 import Pricing from "@/components/pricing";
 import { Metadata } from "next";
 
@@ -25,7 +26,20 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div>
-      <Pricing />
+      <AnimatedContent
+        distance={150}
+        direction="horizontal"
+        reverse={false}
+        duration={1.2}
+        ease="power3.out"
+        initialOpacity={0.2}
+        animateOpacity
+        scale={1.1}
+        threshold={0.2}
+        delay={0.3}
+      >
+        <Pricing />
+      </AnimatedContent>
     </div>
   );
 }
