@@ -1,5 +1,7 @@
 import AnimatedContent from "@/components/animations/AnimatedContent/AnimatedContent";
+import Loader from "@/components/Loader";
 import SignupComponent from "@/components/SignupComponent";
+import { Suspense } from "react";
 
 export default function SignupPage() {
   return (
@@ -16,7 +18,13 @@ export default function SignupPage() {
       delay={0.3}
     >
       <section className="flex min-h-screen bg-dark px-4 py-16 md:py-32 dark:bg-transparent text-white">
-        <SignupComponent />
+        <Suspense
+          fallback={
+            <div className="text-center mt-10"><Loader/></div>
+          }
+        >
+          <SignupComponent />
+        </Suspense>
       </section>
     </AnimatedContent>
   );
