@@ -12,33 +12,33 @@ export default function FAQs() {
   const faqItems = [
     {
       id: "item-1",
-      question: "How long does shipping take?",
+      question: "What is this app and who is it for?",
       answer:
-        "Standard shipping takes 3-5 business days, depending on your location. Express shipping options are available at checkout for 1-2 business day delivery.",
+        "This app helps founders, creators, and startup teams craft sharper, more persuasive pitches using AI. Whether you're writing for investors, accelerators, or just refining your idea, our tools give you clear, high-impact summaries and feedback.",
     },
     {
       id: "item-2",
-      question: "What payment methods do you accept?",
+      question: "Is the AI-generated pitch content unique and safe to use?",
       answer:
-        "We accept all major credit cards (Visa, Mastercard, American Express), PayPal, Apple Pay, and Google Pay. For enterprise customers, we also offer invoicing options.",
+        "Yes. Each pitch or email draft is generated based on your unique input. We don’t recycle content, and your data stays private — securely stored and only accessible to you.",
     },
     {
       id: "item-3",
-      question: "Can I change or cancel my order?",
+      question: "Do I need an account to use the features?",
       answer:
-        "You can modify or cancel your order within 1 hour of placing it. After this window, please contact our customer support team who will assist you with any changes.",
+        "Yes, signing in is required. We use magic link authentication for quick and passwordless access. Once logged in, you’ll be able to view your saved pitches and AI feedback anytime.",
     },
     {
       id: "item-4",
-      question: "Do you ship internationally?",
+      question: "What kind of input should I give for the best results?",
       answer:
-        "Yes, we ship to over 50 countries worldwide. International shipping typically takes 7-14 business days. Additional customs fees may apply depending on your country's import regulations.",
+        "Be as clear and detailed as possible. For summaries, paste your full idea or document. For feedback, upload or write your draft pitch. The more context you give, the better the AI can help.",
     },
     {
       id: "item-5",
-      question: "What is your return policy?",
+      question: "Will more AI tools be added in the future?",
       answer:
-        "We offer a 30-day return policy for most items. Products must be in original condition with tags attached. Some specialty items may have different return terms, which will be noted on the product page.",
+        "Absolutely. We're actively working on new features like investor email drafting, elevator pitch rewriting, and smart feedback analysis — all powered through n8n workflows and LLMs.",
     },
   ];
 

@@ -19,7 +19,7 @@ import {
 const menuItems = [
   { name: "Home", href: "/#Home" },
   { name: "Features", href: "/#Features" },
-  { name: "Pricing", href: "/#link" },
+  { name: "Pricing", href: "/pricing" },
   { name: "About", href: "/about" },
 ];
 

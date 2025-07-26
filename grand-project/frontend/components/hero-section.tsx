@@ -82,7 +82,7 @@ export default function HeroSection() {
                   Start Writing
                 </Link>
               </div>
-              <div className="mt-10 flex justify-center w-full">
+              <div className="mt-10 flex justify-center w-full ">
                 <Carousel
                   baseWidth={300}
                   autoplay={true}
