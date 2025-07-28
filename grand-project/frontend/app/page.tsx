@@ -1,6 +1,4 @@
 import HeroSection from "@/components/hero-section";
-import Image from "next/image";
-import Link from "next/link";
 import ContentSection from "@/components/ContentSection";
 import { Metadata } from "next";
 

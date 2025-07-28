@@ -1,18 +1,8 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import Image from "next/image";
 import ShinyText from "./TextAnimations/ShinyText/ShinyText";
 import RotatingText from "./TextAnimations/RotatingText/RotatingText";
 import Carousel from "./Carousel/Carousel";
 import AnimatedContent from "./animations/AnimatedContent/AnimatedContent";
-
-const menuItems = [
-  { name: "Features", href: "#" },
-  { name: "Solution", href: "#" },
-  { name: "Pricing", href: "#" },
-  { name: "About", href: "#" },
-];
 
 export default function HeroSection() {
   return (
@@ -45,7 +35,7 @@ export default function HeroSection() {
                 />
               </span>
               <h2 className="mt-5 text-4xl font-bold leading-tight text-white  sm:text-5xl sm:leading-tight lg:text-6xl lg:leading-tight font-pj">
-                Craft Investor-Winning Pitches with AI Precision
+                You Build the Startup. We’ll Handle the Pitch.
               </h2>
               <p className="mt-5 text-lg font-bold leading-tight  text-white sm:text-lg sm:leading-tight lg:text-xl lg:leading-tight font-pj">
                 Your go-to tool for{" "}

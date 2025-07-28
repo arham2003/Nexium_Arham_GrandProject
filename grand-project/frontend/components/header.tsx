@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 import { cn } from "@/lib/utils";
 import { useScroll } from "motion/react";
-
 import { supabase } from "@/lib/supabase-browser";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,13 +14,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-const menuItems = [
-  { name: "Home", href: "/#Home" },
-  { name: "Features", href: "/#Features" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "About", href: "/about" },
-];
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "./ui/navigation-menu";
 
 export const HeroHeader = () => {
   const [menuState, setMenuState] = React.useState(false);
@@ -41,7 +41,14 @@ export const HeroHeader = () => {
     getUser();
   }, []);
 
-  React.useEffect(() => {
+  const menuItems = [
+    { name: "Features", href: "/#Features" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "About", href: "/about" },
+    ...(user ? [{ name: "Saved Pitches", href: "/saved-pitches" }] : []),
+  ];
+
+  useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (latest) => {
       setScrolled(latest > 0.05);
     });
@@ -79,6 +86,36 @@ export const HeroHeader = () => {
             </div>
             <div className="hidden lg:block">
               <ul className="flex gap-8 text-sm">
+                <NavigationMenu className="hidden lg:block">
+                  <NavigationMenuList>
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger className="bg-transparent px-4 py-3 min-w-[40px] min-h-[40px]">
+                        Getting started
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid gap-1 p-4 md:w-[400px] lg:w-[500px]">
+                          <li className="row">
+                            <NavigationMenuLink asChild>
+                              <a
+                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-bl from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                href="/pitches"
+                              >
+                                📜
+                                <div className="mb-2 mt-4 text-lg font-medium">
+                                  PitchCraft
+                                </div>
+                                <p className="text-sm leading-tight text-muted-foreground">
+                                  Not just pitches. Talk Like King to Investors!
+                                  👑
+                                </p>
+                              </a>
+                            </NavigationMenuLink>
+                          </li>
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
                 {menuItems.map((item, index) => (
                   <li key={index}>
                     <Button variant="ghost" asChild>

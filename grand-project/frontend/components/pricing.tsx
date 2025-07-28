@@ -40,10 +40,10 @@ export default function Pricing() {
               <ul className="list-outside space-y-3 text-sm">
                 {[
                   "Save and View Pitches",
-                  "Pitch Summarizer (3 uses/month)",
-                  "Investor Email Draft Assistant (3 uses/month)",
-                  "Pitch Feedback Analyzer (3 uses/month)",
-                  "Elevator Pitch Rewriter (3 uses/month)",
+                  "Pitch Summarizer (5 uses/month)",
+                  "Investor Email Draft Assistant (5 uses/month)",
+                  "Pitch Feedback Analyzer (5 uses/month)",
+                  "Elevator Pitch Rewriter (5 uses/month)",
                 ].map((item, index) => (
                   <li key={index} className="flex items-center gap-2">
                     <Check className="size-3" />
@@ -67,7 +67,9 @@ export default function Pricing() {
 
             <div className="flex flex-col">
               <CardHeader>
-                <CardTitle className="font-medium">Pro (Launching Soon)</CardTitle>
+                <CardTitle className="font-medium">
+                  Pro (Launching Soon)
+                </CardTitle>
                 <span className="my-3 block text-2xl font-semibold">
                   $19 / mo
                 </span>
@@ -83,7 +85,6 @@ export default function Pricing() {
                     "Pitch Summaries (Unlimited)",
                     "Investor Email Draft Assistant (Unlimited)",
                     "AI Writing Styles (Choose from 3 styles)",
-                    
                   ].map((item, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <Check className="size-3" />
@@ -102,7 +103,9 @@ export default function Pricing() {
 
           <Card className="bg-gray-300 flex flex-col">
             <CardHeader>
-              <CardTitle className="font-medium">Startup (Launching Soon)</CardTitle>
+              <CardTitle className="font-medium">
+                Startup (Launching Soon)
+              </CardTitle>
               <span className="my-3 block text-2xl font-semibold">
                 $29 / mo
               </span>

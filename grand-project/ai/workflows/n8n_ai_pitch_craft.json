@@ -1,0 +1,568 @@
+{
+  "name": "n8n_first_demo",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c41651d7-f99b-49ec-acef-d8defc3919c5",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        168
+      ],
+      "id": "7116a7dc-aa9e-41fe-90e2-f9b3bd48ecea",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are an intelligent email prompt assistant, Draft 3 sample investor oriented email prompts to give to a chatbot, keep it short.\n\nonly provide prompts in formatted structure with no additional text.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        64
+      ],
+      "id": "1c903937-e3d9-4cdf-9387-ccd23dee1bd1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        288
+      ],
+      "id": "9a0b84b3-370c-4183-b9ca-f66a01ee9f50",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FdfqrCBwlWVUp1aF",
+          "name": "Learning_gemini_on_form_submission"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This code runs inside an n8n Function node\nconst outputText = $input.item.json.output;\n\n// Split the text by `\\n\\n` and trim each one\nconst prompts = outputText\n  .split('\\n\\n')\n  .map(p => p.trim())\n  .filter(p => p !== '');\n\n// Return each prompt as a new item\nreturn prompts.map((prompt, index) => {\n  return {\n    json: {\n      id: index + 1,\n      prompt: prompt,\n    },\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        168
+      ],
+      "id": "c7db35f1-ac97-415f-811d-f3b90221d6c2",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        224,
+        168
+      ],
+      "id": "e5951fb7-561b-4737-a0b3-00f65b7fa8a4",
+      "name": "Respond to Webhook",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pitchcraft",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1296,
+        168
+      ],
+      "id": "ba320569-6241-4918-aa2f-8831fbc6fda2",
+      "name": "Email Prompts",
+      "webhookId": "21fe6e8a-3ed4-46bd-8a8c-bea98cfc738b"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c41651d7-f99b-49ec-acef-d8defc3919c5",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        -232
+      ],
+      "id": "6e66da95-4974-438b-9d01-7125bec72e0d",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "504547d1-0153-4757-8611-aa5bf57af552",
+              "leftValue": "={{ $json.body.feature }}",
+              "rightValue": "INVESTOR_EMAIL",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1072,
+        168
+      ],
+      "id": "d472101c-d544-4530-a65a-a7347b9c396d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a457454-f5b8-410e-8e9e-1ed370eef6df",
+              "leftValue": "={{ $json.body.tone }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "de49ccef-d196-4847-95a5-13731ad30bd1",
+              "leftValue": "={{ $json.body.inputPrompt }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -848,
+        -32
+      ],
+      "id": "8633bb17-042c-437c-8a13-06cd16a5e784",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent Email Draft Assisstant. {{ $json.body.inputPrompt }} in a {{ $json.body.tone }}.\n\nProvide a structured output (no markdownn) with no additional text except email and subject.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        -336
+      ],
+      "id": "5dc85f82-d3d2-4b1c-a671-fe122502b3c5",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -112
+      ],
+      "id": "448f11ca-9dfb-4d8d-a34c-104b6d176948",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FdfqrCBwlWVUp1aF",
+          "name": "Learning_gemini_on_form_submission"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This code runs inside an n8n Function node\n\n// Step 1: Get the first item in the array (assuming only one email object)\nconst raw = $input.item.json.output;\n\n// Step 2: Parse it safely\nconst paragraphs = raw.split('\\n\\n').map(p => p.trim()).filter(p => p);\n\n// Step 3: Extract fields\nconst subjectLine = paragraphs.find(p => p.toLowerCase().startsWith('subject:')) || '';\nconst subject = subjectLine.replace(/subject:\\s*/i, '');\n\nconst body = paragraphs\n  .filter(p => !p.toLowerCase().startsWith('subject:') && !p.includes('[Your Name]') && !p.toLowerCase().startsWith('sincerely'))\n  .join('\\n\\n');\n\nconst signature = paragraphs.find(p => p.toLowerCase().startsWith('sincerely')) || '';\n\n// Step 4: Return clean structured email\nreturn [\n  {\n    json: {\n      subject,\n      body,\n      signature\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -232
+      ],
+      "id": "899191dd-33fe-45ba-8a73-30275866dadd",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c41651d7-f99b-49ec-acef-d8defc3919c5",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        568
+      ],
+      "id": "b75c5e26-c915-43ab-afb7-8b86271e3dcb",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate a 30-second elevator pitch for a startup. The output should be either:\n\nin bullet points OR\n\nin speech format with natural pauses (e.g., \"...\")\n\nOnly return the pitch. No explanations, no markdown, no extra formatting.\n\nTarget audience: Investors\nTone: {{ $json.body.pitchTone }}\nStartup Description: {{ $json.body.startupDescription }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        568
+      ],
+      "id": "159fe8b9-0039-4c73-911c-0c5d4ee97c82",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        792
+      ],
+      "id": "56696e2e-52d1-47cb-b4ef-82c5ae4c68da",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "FdfqrCBwlWVUp1aF",
+          "name": "Learning_gemini_on_form_submission"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.userId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        792
+      ],
+      "id": "5a6e44c3-4735-44f2-b923-d43fb11a9a58",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Get the first (and assumed only) item\nconst rawOutput = items[0].json.output;\n\nreturn [\n  {\n    json: {\n      rewrittenPitch: rawOutput.trim()\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        568
+      ],
+      "id": "9d9e6fdf-e81f-4b1b-bee7-745e4785859a",
+      "name": "Code2"
+    }
+  ],
+  "pinData": {
+    "Code": [
+      {
+        "json": {
+          "id": 1,
+          "prompt": "1.  Draft an email to investors: Subject: Q3 2023 Performance Update. Summarize key achievements, financial highlights, and future outlook. Attach full report and invite questions."
+        }
+      },
+      {
+        "json": {
+          "id": 2,
+          "prompt": "2.  Compose an email to potential investors: Subject: New Investment Opportunity: [Company Name] Series A. Introduce the company, market problem, solution, and invite review of the pitch deck."
+        }
+      },
+      {
+        "json": {
+          "id": 3,
+          "prompt": "3.  Write an email to existing investors: Request a 15-minute call to discuss our upcoming product launch and its strategic impact. Provide 2-3 time slot options."
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Prompts": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Karachi",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "99fec53e-d3cc-4293-8783-6ff98e32831f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "926438906e8a9ae04cfe68d60551a3eccea4d0a619b6ba64c9f36702816f586b"
+  },
+  "id": "DilkOycBwkX5sriD",
+  "tags": []
+}
