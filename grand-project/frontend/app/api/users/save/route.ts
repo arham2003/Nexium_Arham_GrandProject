@@ -3,7 +3,9 @@ import prisma from "@/utils/prisma";
 
 export async function POST(req: Request) {
   try {
-    const { email, name } = await req.json();
+    const body = await req.json();
+    const email = body?.email?.trim();
+    const name = body?.name?.trim() || null;
 
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -11,7 +13,7 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.upsert({
       where: { email },
-      update: { name },
+      update: name ? { name } : {},
       create: { email, name },
     });
 

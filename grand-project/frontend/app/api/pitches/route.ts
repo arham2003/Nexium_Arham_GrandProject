@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
+  const recent = searchParams.get("recent"); // check for ?recent=true
 
   if (!userId) {
     return NextResponse.json(
@@ -14,11 +15,17 @@ export async function GET(req: Request) {
   }
 
   try {
+    const whereClause = { userId };
+    const orderClause = { createdAt: "desc" };
+    const limit = recent === "true" ? 3 : undefined;
+
     const pitches = await prisma.pitch.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
+      where: whereClause,
+      orderBy: orderClause,
+      take: limit, // only applies if recent is true
     });
-    return NextResponse.json(pitches);
+
+    return NextResponse.json( pitches );
   } catch (error) {
     console.error(error);
     return NextResponse.json(

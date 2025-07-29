@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import Loader from "./Loader";
 
 const FEATURES = [
+  { key: "SELECT", label: "Show More..." },
   { key: "INVESTOR_EMAIL", label: "Investor Email Draft Assistant ⬅️" },
   { key: "ELEVATOR_REWRITE", label: "Elevator Pitch Rewriter ⬅️" },
 ] as const;
@@ -23,7 +24,7 @@ type FeatureKey = (typeof FEATURES)[number]["key"];
 type SamplePrompt = { id: number; prompt: string };
 
 export default function PitchPage() {
-  const [selected, setSelected] = useState<FeatureKey>("INVESTOR_EMAIL");
+  const [selected, setSelected] = useState<FeatureKey>("SELECT");
   const [inputText, setInputText] = useState("");
   const [emailTone, setEmailTone] = useState("");
   const [outputText, setOutputText] = useState("");
@@ -34,6 +35,21 @@ export default function PitchPage() {
   const [fetchingPrompts, setFetchingPrompts] = useState(false);
   const [creditsLeft, setCreditsLeft] = useState<number | null>(null);
   const [pitchTone, setPitchTone] = useState("");
+  const [recentPitches, setRecentPitches] = useState([]);
+
+  useEffect(() => {
+    const fetchRecentPitches = async () => {
+      if (!user) return;
+      try {
+        const res = await fetch(`/api/pitches?userId=${user.id}&recent=true`);
+        const data = await res.json();
+        if (res.ok) setRecentPitches(data);
+      } catch (err) {
+        console.error("Failed to fetch recent pitches:", err);
+      }
+    };
+    fetchRecentPitches();
+  }, [user]);
 
   const router = useRouter();
   const supabase = createClient();
@@ -139,6 +155,7 @@ export default function PitchPage() {
     }
   };
   useEffect(() => {
+    if (selected === "SELECT") return;
     fetchCredits();
   }, [selected]);
 
@@ -179,145 +196,184 @@ export default function PitchPage() {
   }
 
   return (
-    <section className="max-w-2xl mx-auto p-8 space-y-6 my-6">
+    <section className="max-w-7xl mx-auto p-6 space-y-6 py-16 md:py-24">
       <h1 className="text-3xl font-bold text-white text-center">
         Pitch AI Tools
       </h1>
 
-      <div className="text-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              {FEATURES.find((f) => f.key === selected)?.label}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            {FEATURES.map((f) => (
-              <DropdownMenuItem key={f.key} onSelect={() => setSelected(f.key)}>
-                {f.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {creditsLeft !== null && (
-        <p className="text-sm text-gray-300 mt-2 text-center">
-          <span className="border-2 rounded-md p-2">
-            You have <span className="font-bold text-white">{creditsLeft}</span>{" "}
-            credits left for this tool.
-          </span>
-        </p>
-      )}
-      {selected === "INVESTOR_EMAIL" && (
-        <div className="space-y-3">
-          <h2 className="text-xl font-semibold text-white">
-            AI-Suggested Prompts
+      <div className="flex flex-col lg:flex-col gap-6">
+        <aside className="w-full  space-y-4">
+          <h2 className="text-white text-xl font-semibold">
+            Recent Activity ⌚
           </h2>
-          {fetchingPrompts ? (
-            <Loader />
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {samplePrompts.map((item) => (
+          {recentPitches.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentPitches.map((pitch) => (
                 <div
-                  key={item.id}
-                  onClick={() => setInputText(item.prompt)}
-                  className="bg-gray-300 border p-4 rounded-md shadow-sm cursor-pointer hover:bg-gray-100 transition text-sm"
+                  key={pitch.id}
+                  className="rounded border p-4 bg-gray-800 text-white"
                 >
-                  <h3 className="font-medium mb-1">Prompt {item.id}</h3>
-                  <p className="text-gray-700">{item.prompt}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Feature: {pitch.featureType}
+                  </p>
+                  <p className="text-sm mt-2">Input: {pitch.input}</p>
+                  <p className="text-sm mt-2 text-green-600 line-clamp-4">
+                    Output: {pitch.output}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Created: {new Date(pitch.createdAt).toLocaleString()}
+                  </p>
                 </div>
               ))}
             </div>
+          ) : (
+            <p className="text-sm text-gray-400">No pitches found.</p>
           )}
+        </aside>
+
+        <div className="w-full lg:w-2/3">
+          <span className="text-white font-bold pr-4">Select AI Feature: </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                {FEATURES.find((f) => f.key === selected)?.label}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {FEATURES.map((f) => (
+                <DropdownMenuItem
+                  key={f.key}
+                  onSelect={() => setSelected(f.key)}
+                >
+                  {f.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4 text-white">
-        {selected === "INVESTOR_EMAIL" && (
-          <div>
-            <label className="block text-sm font-semibold mb-1">
-              Tone of Email
-            </label>
-            <Input
-              type="text"
-              placeholder="e.g. formal, friendly, persuasive"
-              value={emailTone}
-              onChange={(e) => setEmailTone(e.target.value)}
-              required
-            />
-          </div>
-        )}
-
-        {selected === "ELEVATOR_REWRITE" && (
-          <div>
-            <label className="block text-sm font-semibold mb-1">
-              Pitch Tone
-            </label>
-            <Input
-              type="text"
-              placeholder="e.g. bold, concise, investor-focused"
-              value={pitchTone}
-              onChange={(e) => setPitchTone(e.target.value)}
-              required
-            />
-          </div>
-        )}
-
-        <label className="block text-sm font-semibold">
-          {selected === "ELEVATOR_REWRITE"
-            ? "Startup Description"
-            : "Your Prompt"}
-        </label>
-
-        <Textarea
-          required
-          rows={6}
-          value={inputText}
-          className="h-[250px]"
-          onChange={(e) => setInputText(e.target.value)}
-        />
-
-        {selected === "INVESTOR_EMAIL" && (
-          <Button
-            type="submit"
-            variant="secondary"
-            className="w-full max-w-1/2"
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Get your email"}
-          </Button>
-        )}
-
-        {selected === "ELEVATOR_REWRITE" && (
-          <Button
-            type="submit"
-            variant="secondary"
-            className="w-full max-w-1/2"
-            disabled={loading}
-          >
-            {loading ? "Generating..." : "Get your 30s Pitch"}
-          </Button>
-        )}
-
-        {loading ? (
+        {selected !== "SELECT" && (
           <>
-            <Loader />
-          </>
-        ) : (
-          <></>
-        )}
-      </form>
+            {creditsLeft !== null && (
+              <p className="text-sm text-gray-300 mt-2 text-center">
+                <span className="border-2 rounded-md p-2">
+                  You have{" "}
+                  <span className="font-bold text-white">{creditsLeft}</span>{" "}
+                  credits left for this tool.
+                </span>
+              </p>
+            )}
+            {selected === "INVESTOR_EMAIL" && (
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold text-white">
+                  AI-Suggested Prompts
+                </h2>
+                {fetchingPrompts ? (
+                  <Loader />
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {samplePrompts.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => setInputText(item.prompt)}
+                        className="bg-gray-300 border p-4 rounded-md shadow-sm cursor-pointer hover:bg-gray-100 transition text-sm"
+                      >
+                        <h3 className="font-medium mb-1">Prompt {item.id}</h3>
+                        <p className="text-gray-700">{item.prompt}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-      {error && <p className="text-red-500">{error}</p>}
-      {outputText ? (
-        <div>
-          <h2 className="font-semibold mt-4 text-white">AI Output:</h2>
-          <div className="bg-gray-800 p-4 rounded text-white whitespace-pre-wrap mt-4">
-            {outputText}
-          </div>
-        </div>
-      ) : null}
+            <form onSubmit={handleSubmit} className="space-y-4 text-white">
+              {selected === "INVESTOR_EMAIL" && (
+                <div>
+                  <label className="block text-sm font-semibold mb-1">
+                    Tone of Email
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. formal, friendly, persuasive"
+                    value={emailTone}
+                    onChange={(e) => setEmailTone(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
+              {selected === "ELEVATOR_REWRITE" && (
+                <div>
+                  <label className="block text-sm font-semibold mb-1">
+                    Pitch Tone
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. bold, concise, investor-focused"
+                    value={pitchTone}
+                    onChange={(e) => setPitchTone(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
+              <label className="block text-sm font-semibold">
+                {selected === "ELEVATOR_REWRITE"
+                  ? "Startup Description"
+                  : "Your Prompt"}
+              </label>
+
+              <Textarea
+                required
+                rows={6}
+                value={inputText}
+                className="h-[250px]"
+                onChange={(e) => setInputText(e.target.value)}
+              />
+
+              {selected === "INVESTOR_EMAIL" && (
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className="w-full max-w-1/2"
+                  disabled={loading}
+                >
+                  {loading ? "Generating..." : "Get your email"}
+                </Button>
+              )}
+
+              {selected === "ELEVATOR_REWRITE" && (
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  className="w-full max-w-1/2"
+                  disabled={loading}
+                >
+                  {loading ? "Generating..." : "Get your 30s Pitch"}
+                </Button>
+              )}
+
+              {loading ? (
+                <>
+                  <Loader />
+                </>
+              ) : (
+                <></>
+              )}
+            </form>
+
+            {error && <p className="text-red-500">{error}</p>}
+            {outputText ? (
+              <div>
+                <h2 className="font-semibold mt-4 text-white">AI Output:</h2>
+                <div className="bg-gray-800 p-4 rounded text-white whitespace-pre-wrap mt-4">
+                  {outputText}
+                </div>
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
     </section>
   );
 }

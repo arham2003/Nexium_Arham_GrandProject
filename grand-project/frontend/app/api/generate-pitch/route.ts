@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Prepare payload for webhook
   let payload: Record<string, any> = {
     userId,
     feature,
@@ -47,16 +46,7 @@ export async function POST(req: NextRequest) {
     payload.tone = tone;
   }
 
-  const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL;
-  if (!N8N_WEBHOOK_URL) {
-    return NextResponse.json(
-      { error: "Missing N8N_WEBHOOK_URL in environment." },
-      { status: 500 }
-    );
-  }
-
-  // then use it
-  const webhookRes = await fetch(N8N_WEBHOOK_URL, {
+  const webhookRes = await fetch(process.env.N8N_WEBHOOK_URL!, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

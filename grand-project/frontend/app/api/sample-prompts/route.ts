@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 let cachedPrompts: any[] = [];
 
-// Handle POST request: Send to n8n and cache response
 export async function POST(req: NextRequest) {
   try {
     const { feature } = await req.json();
@@ -17,7 +16,6 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    // ✅ data is an array already, so cache it directly
     cachedPrompts = Array.isArray(data) ? data : [];
 
     return NextResponse.json({ success: true });
