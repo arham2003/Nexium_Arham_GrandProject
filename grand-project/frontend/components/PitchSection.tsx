@@ -13,6 +13,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import Loader from "./Loader";
+import SpotlightCard from "./SpotlightCard/SpotlightCard";
+import { Pi } from "lucide-react";
+import Pitch from "@/app/pitch/page";
 
 const FEATURES = [
   { key: "SELECT", label: "Show More..." },
@@ -196,10 +199,15 @@ export default function PitchPage() {
   }
 
   return (
-    <section className="max-w-7xl mx-auto p-6 space-y-6 py-16 md:py-24">
-      <h1 className="text-3xl font-bold text-white text-center">
-        Pitch AI Tools
-      </h1>
+    <div>
+      {creditsLeft !== null && selected !== "SELECT" && (
+        <p className="text-sm text-gray-300 mt-2 text-center">
+          <span className="border-2 rounded-md p-2">
+            You have <span className="font-bold text-white">{creditsLeft}</span>{" "}
+            credits left for this tool.
+          </span>
+        </p>
+      )}
 
       <div className="flex flex-col lg:flex-col gap-6">
         <aside className="w-full  space-y-4">
@@ -209,20 +217,27 @@ export default function PitchPage() {
           {recentPitches.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {recentPitches.map((pitch) => (
-                <div
-                  key={pitch.id}
-                  className="rounded border p-4 bg-gray-800 text-white"
-                >
-                  <p className="text-sm text-muted-foreground">
-                    Feature: {pitch.featureType}
-                  </p>
-                  <p className="text-sm mt-2">Input: {pitch.input}</p>
-                  <p className="text-sm mt-2 text-green-600 line-clamp-4">
-                    Output: {pitch.output}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Created: {new Date(pitch.createdAt).toLocaleString()}
-                  </p>
+                <div key={pitch.id}>
+                  <SpotlightCard
+                    className="custom-spotlight-card mt-4"
+                    spotlightColor="rgba(0, 229, 255, 0.25)"
+                  >
+                    <div key={pitch.id} className="p-2 text-white">
+                      <p className="text-sm text-muted-foreground">
+                        Feature:{" "}
+                        {pitch.featureType === "ELEVATOR_REWRITE"
+                          ? "Pitch Rewrite"
+                          : "Email Draft"}
+                      </p>
+                      <p className="text-sm mt-2">{pitch.input}</p>
+                      <p className="text-sm mt-2  line-clamp-4">
+                        Output: <span className="text-emerald-500"> {pitch.output}</span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Created: {new Date(pitch.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </SpotlightCard>
                 </div>
               ))}
             </div>
@@ -253,15 +268,6 @@ export default function PitchPage() {
         </div>
         {selected !== "SELECT" && (
           <>
-            {creditsLeft !== null && (
-              <p className="text-sm text-gray-300 mt-2 text-center">
-                <span className="border-2 rounded-md p-2">
-                  You have{" "}
-                  <span className="font-bold text-white">{creditsLeft}</span>{" "}
-                  credits left for this tool.
-                </span>
-              </p>
-            )}
             {selected === "INVESTOR_EMAIL" && (
               <div className="space-y-3">
                 <h2 className="text-xl font-semibold text-white">
@@ -335,7 +341,7 @@ export default function PitchPage() {
                 <Button
                   type="submit"
                   variant="secondary"
-                  className="w-full max-w-1/2"
+                  className="w-full max-w-1/4 mx-auto flex justify-center"
                   disabled={loading}
                 >
                   {loading ? "Generating..." : "Get your email"}
@@ -346,7 +352,7 @@ export default function PitchPage() {
                 <Button
                   type="submit"
                   variant="secondary"
-                  className="w-full max-w-1/2"
+                  className="w-full max-w-1/4 mx-auto flex justify-center"
                   disabled={loading}
                 >
                   {loading ? "Generating..." : "Get your 30s Pitch"}
@@ -366,14 +372,19 @@ export default function PitchPage() {
             {outputText ? (
               <div>
                 <h2 className="font-semibold mt-4 text-white">AI Output:</h2>
-                <div className="bg-gray-800 p-4 rounded text-white whitespace-pre-wrap mt-4">
-                  {outputText}
-                </div>
+                <SpotlightCard
+                  className="custom-spotlight-card mt-4"
+                  spotlightColor="rgba(0, 229, 255, 0.2)"
+                >
+                  <div className="text-white whitespace-pre-wrap">
+                    {outputText}
+                  </div>
+                </SpotlightCard>
               </div>
             ) : null}
           </>
         )}
       </div>
-    </section>
+    </div>
   );
 }

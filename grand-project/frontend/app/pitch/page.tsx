@@ -1,3 +1,4 @@
+import AnimatedContent from "@/components/animations/AnimatedContent/AnimatedContent";
 import PitchPage from "@/components/PitchSection";
 import { Metadata } from "next";
 
@@ -24,8 +25,24 @@ export const metadata: Metadata = {
 
 export default function Pitch() {
   return (
-    <div>
-      <PitchPage />
-    </div>
+    <section className="max-w-7xl mx-auto p-6 space-y-6 py-16 md:py-24">
+      <h1 className="text-3xl font-bold text-white text-center">
+        Pitch AI Tools
+      </h1>
+      <AnimatedContent
+        distance={150}
+        direction="horizontal"
+        reverse={false}
+        duration={1.2}
+        ease="power3.out"
+        initialOpacity={0.2}
+        animateOpacity
+        scale={1.1}
+        threshold={0.2}
+        delay={0.3}
+      >
+        <PitchPage />
+      </AnimatedContent>
+    </section>
   );
 }
