@@ -50,7 +50,7 @@ export default function RootLayout({
           </main>
           <FooterSection />
         </div>
-        <Toaster />
+        <Toaster position="top-right"/>
       </body>
     </html>
   );

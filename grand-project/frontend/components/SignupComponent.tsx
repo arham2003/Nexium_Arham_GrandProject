@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function SignupComponent() {
   const supabase = createClient();
@@ -34,6 +35,7 @@ export default function SignupComponent() {
     setMessage(
       error?.message ?? "Check your email to finish creating your account"
     );
+    toast.success("Check your inbox for the magic link!");
   };
 
   const handleGoogle = async () => {
@@ -116,8 +118,6 @@ export default function SignupComponent() {
           Send Magic Link
         </Button>
       </div>
-
-      {message && <p className="mt-4 text-sm text-center text-green-600">{message}</p>}
 
       <p className="text-center text-sm mt-6 text-muted-foreground">
         Have an account?{" "}
