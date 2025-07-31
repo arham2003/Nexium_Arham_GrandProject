@@ -1,6 +1,7 @@
 import HeroSection from "@/components/hero-section";
 import ContentSection from "@/components/ContentSection";
 import { Metadata } from "next";
+import { FeatureSection2 } from "@/components/demo";
 
 export const metadata: Metadata = {
   title: "PitchCraft | Home",
@@ -27,6 +28,7 @@ export default function Home() {
   return (
     <div>
       <HeroSection />
+      <FeatureSection2 />
       <ContentSection />
     </div>
   );
